@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMT SOC IT REPORT</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body { background-color: #0b1120; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .app-container { width: 100%; max-width: 400px; background: #161f32; padding: 20px; border-radius: 12px; border: 1px solid #2d3748; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; font-size: 18px; color: #cbd5e0; margin-top: 0; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 10px; border: none; background: #2d3748; color: white; cursor: pointer; border-radius: 4px; font-size: 12px; }
+        .tab.active { background: #3182ce; font-weight: bold; }
+        label { display: block; font-size: 11px; color: #a0aec0; margin: 15px 0 5px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; background: #0b1120; border: 1px solid #4a5568; color: white; border-radius: 6px; box-sizing: border-box; }
+        .btn-scan { background: #3182ce; border: none; color: white; padding: 10px; border-radius: 6px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: bold; }
+        #reader { width: 100%; border-radius: 8px; overflow: hidden; margin-top: 10px; display: none; }
+        .footer-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .btn-nhan { flex: 1; padding: 15px; background: #38a169; border: none; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-tra { flex: 1; padding: 15px; background: #d69e2e; border: none; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h2>BMT SOC IT REPORT</h2>
+        <div class="tabs">
+            <button class="tab active">BÁO CÁO</button>
+            <button class="tab">ADMIN</button>
+            <button class="tab">LỊCH SỬ</button>
+        </div>
+
+        <div id="reader"></div>
+
+        <label>MÃ NHÂN VIÊN</label>
+        <input type="text" id="staffId" placeholder="Nhập hoặc quét mã...">
+        <button class="btn-scan" onclick="startScan('staffId')">QUÉT MÃ NV</button>
+
+        <label>MÃ THIẾT BỊ</label>
+        <input type="text" id="deviceId" placeholder="Nhập hoặc quét thiết bị...">
+        <button class="btn-scan" onclick="startScan('deviceId')">QUÉT THIẾT BỊ</button>
+
+        <label>TÌNH TRẠNG</label>
+        <select id="status">
+            <option value="test">test</option>
+            <option value="Ổn định">Ổn định</option>
+            <option value="Cần sửa chữa">Cần sửa chữa</option>
+        </select>
+
+        <div class="footer-btns">
+            <button class="btn-nhan" onclick="submitData('NHẬN')">NHẬN</button>
+            <button class="btn-tra" onclick="submitData('TRẢ')">TRẢ</button>
+        </div>
+    </div>
+
+    <script>
+        let html5QrCode;
+
+        function startScan(targetId) {
+            const readerElement = document.getElementById('reader');
+            readerElement.style.display = 'block';
+            
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    document.getElementById(targetId).value = decodedText;
+                    stopScan();
+                }
+            ).catch(err => alert("Lỗi camera: " + err));
+        }
+
+        function stopScan() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('reader').style.display = 'none';
+                });
+            }
+        }
+
+        function submitData(action) {
+            alert("Đã ghi nhận hành động: " + action + " cho thiết bị " + document.getElementById('deviceId').value);
+            // Sau này dán link Google Apps Script vào đây để lưu dữ liệu thật
+        }
+    </script>
+</body>
+</html>
